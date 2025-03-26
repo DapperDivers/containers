@@ -8,11 +8,10 @@ ENV UMASK="0002" \
     TZ="Etc/UTC" \
     DEBCONF_NONINTERACTIVE_SEEN="true" \
     DEBIAN_FRONTEND="noninteractive" \
-    POWERSHELL_DISTRIBUTION_CHANNEL="PSDocker" \
-    VIRTUAL_ENV="/lsiopy"
-
+    POWERSHELL_DISTRIBUTION_CHANNEL="PSDocker"
 RUN \
     apk add --no-cache \
+        catatonit \
         curl \
         imagemagick  \
         imagemagick-heic \
@@ -25,22 +24,23 @@ RUN \
                    Install-Module -Name FanartTvAPI -Scope AllUsers -Force" && \
     chmod -R 755 /usr/local/share/powershell && \
     pip install apprise && \
-    mkdir -p /config && \
-    chmod 755 /config && \
+    mkdir -p /app && \
+    chmod 755 /app && \
     curl -fsSL https://github.com/fscorrupt/Posterizarr/archive/refs/tags/${VERSION}.tar.gz \
-        | tar xzf - -C /config --strip-components=1 && \
-    rm -rf /config/images && \
-    find /config -type f \( -name "*.md" -o -name "*.zip" -o -name "*.yml" -o -name ".*" \) -delete
+        | tar xzf - -C /app --strip-components=1 && \
+    rm -rf /app/images && \
+    find /app -type f \( -name "*.md" -o -name "*.zip" -o -name "*.yml" -o -name ".*" \) -delete
+
 
 COPY entrypoint.sh /entrypoint.sh
 
 USER nobody:nogroup
 
-WORKDIR /config
+WORKDIR /app
 
-VOLUME ["/config", "/assets", "/assetsbackup", "/manualassets"]
+VOLUME ["/app"]
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/usr/bin/catatonit", "--", "/entrypoint.sh"]
 
 LABEL org.opencontainers.image.source="https://github.com/fscorrupt/Posterizarr"
 LABEL org.opencontainers.image.description="Posterizarr - Automated poster generation for Plex/Jellyfin/Emby media libraries"
