@@ -2,7 +2,7 @@ FROM docker.io/library/alpine:3.21
 
 ARG TARGETARCH
 ARG VENDOR
-ARG VERSION=1.9.34
+ARG VERSION
 
 ENV UMASK="0002" \
     TZ="Etc/UTC" \
