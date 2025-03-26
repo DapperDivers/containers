@@ -39,6 +39,10 @@ jobs:
           app-id: ${{ secrets.BOT_APP_ID }}
           private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
 
+      - name: Set lowercase owner
+        id: lowercase
+        run: echo "owner=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
       - name: Install Cosign
         uses: sigstore/cosign-installer@d7d6bc7722e3daa8354c50bcb52f4837da5e9b6a # v3.8.1
 
@@ -50,7 +54,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
-          if ! version=$(regctl image inspect ghcr.io/${{ github.repository_owner }}/${{ matrix.apps.name }}:rolling \
+          if ! version=$(regctl image inspect ghcr.io/${{ steps.lowercase.outputs.owner }}/${{ matrix.apps.name }}:rolling \
               | jq --raw-output '.config.Labels["org.opencontainers.image.version"]' 2>/dev/null) || [[ -z "${version}" ]];
           then
               echo "Failed to get actual version for ${{ matrix.apps.name }}"
