@@ -1,4 +1,4 @@
-FROM docker.io/library/alpine:3.21
+FROM docker.io/library/python:3.13-alpine
 
 ARG TARGETARCH
 ARG VENDOR
@@ -24,6 +24,7 @@ RUN \
     pwsh -Command "Set-PSRepository -Name PSGallery -InstallationPolicy Trusted; \
                    Install-Module -Name FanartTvAPI -Scope AllUsers -Force" && \
     chmod -R 755 /usr/local/share/powershell && \
+    pip install apprise && \
     mkdir -p /config && \
     chmod 755 /config && \
     curl -fsSL https://github.com/fscorrupt/Posterizarr/archive/refs/tags/${VERSION}.tar.gz \
