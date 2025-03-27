@@ -1,7 +1,9 @@
 #!/bin/sh
-set -e
 
-# Remove running file if it exists
-rm /config/temp/Posterizarr.Running || true
+# Needed as the default config expects these
+# files to be in the "config directory"
+cp /app/*.png /app/config
+cp /app/*.ttf /app/config
 
-exec pwsh -File /config/Posterizarr.ps1 "$@"
+# Execute the main application
+exec pwsh -File /app/Posterizarr.ps1 "$@"
